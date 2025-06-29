@@ -16,3 +16,11 @@ export interface IProduct {
   sku: string;
   brand: string;
 }
+
+export interface IProductQueryParams {
+  category?: string;
+  isActive?: boolean;
+  sortBy?: keyof IProduct;
+  sort?: "asc" | "desc";
+  limit?: number;
+}

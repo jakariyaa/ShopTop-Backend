@@ -7,12 +7,36 @@ import {
   createProductsSchema,
   updateProductSchema,
 } from "../validators";
+import { IProductQueryParams } from "../interfaces/prouduct.interface";
 
 const productsRouter = Router();
 
 productsRouter.get("/", async (req: Request, res: Response) => {
-  const products = await Product.find().populate("seller", { fullname: 1 });
-  res.json(products);
+  const {
+    category,
+    isActive,
+    sortBy,
+    sort = "asc",
+    limit = 10,
+  }: IProductQueryParams = req.query;
+
+  const filter: any = {};
+  if (category) filter.category = category;
+  if (isActive !== undefined) filter.isActive = isActive;
+
+  const products = await Product.find(filter)
+    .sort(
+      sortBy
+        ? {
+            [sortBy]: sort,
+          }
+        : {}
+    )
+    .limit(limit)
+    .populate("seller", {
+      fullname: 1,
+    });
+  res.json({ message: "Products fetched successfully", products });
 });
 
 productsRouter.post(
@@ -36,7 +60,6 @@ productsRouter.post(
   }
 );
 
-//test route for creating multiple products
 productsRouter.post(
   "/bulk",
   userExtractor,
@@ -69,6 +92,9 @@ productsRouter.put(
       if (!product) {
         res.status(404).json({ message: "Product not found" });
         return;
+      } else if (product.seller.toString() !== req.user?._id.toString()) {
+        res.status(401).json({ message: "Unauthorized action" });
+        return;
       }
       product.set(productInfo);
       await product.save();
@@ -81,11 +107,19 @@ productsRouter.put(
   }
 );
 
-//test for dropping the products collection
-productsRouter.delete("/drop", async (req: Request, res: Response) => {
-  await Product.collection.drop();
-  console.log("Products collection dropped.");
-  res.status(204).end();
-});
+// for dropping the products collection for testing
+productsRouter.delete(
+  "/drop",
+  userExtractor,
+  async (req: CustomRequest, res: Response) => {
+    if (req.user?.role !== "admin") {
+      res.status(401).json({ message: "only admins can drop the collection" });
+      return;
+    }
+    await Product.collection.drop();
+    console.log("Products collection dropped.");
+    res.status(204).end();
+  }
+);
 
 export default productsRouter;

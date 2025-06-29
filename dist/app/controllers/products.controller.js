@@ -26,8 +26,23 @@ const middlewares_1 = require("../middlewares");
 const validators_1 = require("../validators");
 const productsRouter = (0, express_1.Router)();
 productsRouter.get("/", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const products = yield models_1.Product.find().populate("seller", { fullname: 1 });
-    res.json(products);
+    const { category, isActive, sortBy, sort = "asc", limit = 10, } = req.query;
+    const filter = {};
+    if (category)
+        filter.category = category;
+    if (isActive !== undefined)
+        filter.isActive = isActive;
+    const products = yield models_1.Product.find(filter)
+        .sort(sortBy
+        ? {
+            [sortBy]: sort,
+        }
+        : {})
+        .limit(limit)
+        .populate("seller", {
+        fullname: 1,
+    });
+    res.json({ message: "Products fetched successfully", products });
 }));
 productsRouter.post("/", middlewares_1.userExtractor, (0, middlewares_1.validate)(validators_1.createProductSchema), (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
@@ -43,7 +58,6 @@ productsRouter.post("/", middlewares_1.userExtractor, (0, middlewares_1.validate
         next(error);
     }
 }));
-//test route for creating multiple products
 productsRouter.post("/bulk", middlewares_1.userExtractor, (0, middlewares_1.validate)(validators_1.createProductsSchema), (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const products = req.validatedData;
@@ -62,11 +76,16 @@ productsRouter.post("/bulk", middlewares_1.userExtractor, (0, middlewares_1.vali
     }
 }));
 productsRouter.put("/:id", middlewares_1.userExtractor, (0, middlewares_1.validate)(validators_1.updateProductSchema), (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
     try {
-        const _a = req.validatedData, { seller } = _a, productInfo = __rest(_a, ["seller"]);
+        const _b = req.validatedData, { seller } = _b, productInfo = __rest(_b, ["seller"]);
         const product = yield models_1.Product.findById(req.params.id);
         if (!product) {
             res.status(404).json({ message: "Product not found" });
+            return;
+        }
+        else if (product.seller.toString() !== ((_a = req.user) === null || _a === void 0 ? void 0 : _a._id.toString())) {
+            res.status(401).json({ message: "Unauthorized action" });
             return;
         }
         product.set(productInfo);
@@ -79,8 +98,13 @@ productsRouter.put("/:id", middlewares_1.userExtractor, (0, middlewares_1.valida
         next(error);
     }
 }));
-//test for dropping the products collection
-productsRouter.delete("/drop", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+// for dropping the products collection for testing
+productsRouter.delete("/drop", middlewares_1.userExtractor, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
+    if (((_a = req.user) === null || _a === void 0 ? void 0 : _a.role) !== "admin") {
+        res.status(401).json({ message: "only admins can drop the collection" });
+        return;
+    }
     yield models_1.Product.collection.drop();
     console.log("Products collection dropped.");
     res.status(204).end();

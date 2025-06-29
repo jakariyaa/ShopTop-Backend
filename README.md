@@ -13,6 +13,12 @@ ShopTop Backend is a robust, scalable, and secure RESTful API server for an e-co
 - **Error Handling**: Centralized error handling and logging middleware.
 - **MongoDB Integration**: Uses Mongoose for schema modeling and database operations.
 - **Environment Configuration**: Supports environment variables for configuration.
+- **Bulk Product Operations**: Efficiently create multiple products in a single request.
+- **Role-Based Access Control**: Fine-grained permissions for different user roles (admin, merchant, customer).
+- **Virtual Fields & Computed Properties**: Product model includes virtuals like `finalPrice` and `reviewsCount`.
+- **Testing Utilities**: Endpoints for bulk operations and collection management to support testing and development.
+- **Modern TypeScript Practices**: Strongly typed interfaces and models for safety and maintainability.
+- **Ready for Cloud Deployment**: Vercel configuration for seamless deployment.
 
 ## Getting Started
 
@@ -63,7 +69,7 @@ ShopTop Backend is a robust, scalable, and secure RESTful API server for an e-co
 - `GET    /api/users` - List all users
 - `PUT    /api/users/:id` - Update user info (self or admin)
 - `DELETE /api/users/:id` - Delete a user (admin only)
-- `GET    /api/users/whoami` - Get current user info (self, for testing)
+- `GET    /api/users/whoami` - Get current user info (from JWT)
 
 ### Login
 
@@ -71,11 +77,11 @@ ShopTop Backend is a robust, scalable, and secure RESTful API server for an e-co
 
 ### Products
 
-- `GET    /api/products` - List all products
+- `GET    /api/products` - List all products (filters, sorting, pagination)
 - `POST   /api/products` - Create a new product (merchant/admin)
 - `POST   /api/products/bulk` - Bulk create products
 - `PUT    /api/products/:id` - Update a product
-- `DELETE /api/products/drop` - Drop all products (testing only)
+- `DELETE /api/products/drop` - Drop all products (testing & admin only)
 
 ## Project Structure
 

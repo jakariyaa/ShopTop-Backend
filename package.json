@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "tsx --watch src/server.ts",
     "start": "tsc && node dist/server.js",
-    "build": "tsc"
+    "build": "tsc",
+    "deploy": "tsc && git add . && git commit -m 'init' && git push origin main"
   },
   "keywords": [],
   "author": "",
