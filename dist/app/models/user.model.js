@@ -16,6 +16,11 @@ const mongoose_1 = __importDefault(require("mongoose"));
 const validator_1 = __importDefault(require("validator"));
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const userSchema = new mongoose_1.default.Schema({
+    fullname: {
+        type: String,
+        required: true,
+        trim: true,
+    },
     username: {
         type: String,
         required: true,
@@ -31,7 +36,7 @@ const userSchema = new mongoose_1.default.Schema({
     password: {
         type: String,
         required: true,
-        validate: validator_1.default.isStrongPassword,
+        validate: [validator_1.default.isStrongPassword, "Password must be strong"],
     },
     age: Number,
     gender: {
@@ -44,8 +49,8 @@ const userSchema = new mongoose_1.default.Schema({
         type: String,
         required: true,
         lowercase: true,
-        enum: ["admin", "moderator", "user"],
-        default: "user",
+        enum: ["admin", "merchant", "customer"],
+        default: "customer",
     },
 }, {
     timestamps: true,
@@ -76,7 +81,7 @@ userSchema.post("save", function (doc, next) {
     console.log("User saved:", doc.username);
     next();
 });
-userSchema.post("deleteOne", function (doc, next) {
+userSchema.post("findOneAndDelete", function (doc, next) {
     doc && console.log("User removed:", doc.username);
     next();
 });

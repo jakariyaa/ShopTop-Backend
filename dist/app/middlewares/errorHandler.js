@@ -12,7 +12,7 @@ function errorHandler(error, req, res, next) {
     }
     else if (error.code === 11000) {
         res.status(400).json({
-            message: "Duplicate key error",
+            message: "Duplicate key error" + error.keyValue,
             error: error,
         });
         return;
@@ -24,5 +24,9 @@ function errorHandler(error, req, res, next) {
         });
         return;
     }
-    next(error);
+    res.status(500).json({
+        message: error.message || "An unexpected error occurred",
+        error: error,
+    });
+    console.log(error);
 }
