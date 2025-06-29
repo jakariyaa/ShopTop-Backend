@@ -4,11 +4,15 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
+const path_1 = __importDefault(require("path"));
 const controllers_1 = require("./app/controllers");
 const middlewares_1 = require("./app/middlewares");
 const app = (0, express_1.default)();
 app.use(express_1.default.json());
 app.use(middlewares_1.logger);
+app.get("/", (req, res) => {
+    res.sendFile(path_1.default.join(__dirname, "public", "index.html"));
+});
 app.use("/api/users", controllers_1.usersRouter);
 app.use("/api/login", controllers_1.loginRouter);
 app.use("/api/products", controllers_1.productsRouter);
