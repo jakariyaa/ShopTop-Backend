@@ -11,7 +11,7 @@ const app = (0, express_1.default)();
 app.use(express_1.default.json());
 app.use(middlewares_1.logger);
 app.get("/", (req, res) => {
-    res.sendFile(path_1.default.join(__dirname, "public", "index.html"));
+    res.sendFile(path_1.default.join(__dirname, "..", "public", "index.html"));
 });
 app.use("/api/users", controllers_1.usersRouter);
 app.use("/api/login", controllers_1.loginRouter);
