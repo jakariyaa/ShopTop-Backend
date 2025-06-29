@@ -4,8 +4,437 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>ShopTop Backend</title>
+    <style>
+      body {
+        font-family: "Segoe UI", Arial, sans-serif;
+        background: #f7f9fb;
+        color: #222;
+        margin: 0;
+        padding: 0;
+      }
+      header {
+        background: #2d3748;
+        color: #fff;
+        padding: 2rem 1rem 1rem 1rem;
+        text-align: center;
+      }
+      main {
+        max-width: 900px;
+        margin: 2rem auto;
+        background: #fff;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
+        padding: 2rem;
+      }
+      h1 {
+        margin-top: 0;
+        font-size: 2.5rem;
+      }
+      h2 {
+        color: #2d3748;
+        margin-top: 2rem;
+      }
+      code,
+      pre {
+        background: #f1f1f1;
+        border-radius: 4px;
+        padding: 2px 6px;
+        font-size: 1em;
+      }
+      pre {
+        padding: 1em;
+        overflow-x: auto;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 1rem 0;
+      }
+      th,
+      td {
+        border: 1px solid #e2e8f0;
+        padding: 0.5rem;
+        text-align: left;
+      }
+      th {
+        background: #f7fafc;
+      }
+      .endpoint {
+        font-weight: bold;
+        color: #3182ce;
+      }
+      .method {
+        font-weight: bold;
+        color: #38a169;
+      }
+      footer {
+        text-align: center;
+        color: #888;
+        margin: 2rem 0 1rem 0;
+        font-size: 0.95em;
+      }
+      details summary {
+        cursor: pointer;
+        font-weight: bold;
+        margin-top: 1em;
+      }
+    </style>
   </head>
   <body>
-    <h1>Welcome to ShopTop Backend</h1>
+    <header>
+      <h1>ShopTop Backend</h1>
+      <p>
+        A robust, scalable RESTful API for e-commerce, built with Node.js,
+        Express, TypeScript, and MongoDB.
+      </p>
+      <p>
+        <a
+          href="https://github.com/jakariyaa/ShopTop-Backend"
+          style="color: #90cdf4"
+          >GitHub Repository</a
+        >
+      </p>
+    </header>
+    <main>
+      <h2>API Endpoints</h2>
+      <table>
+        <tr>
+          <th>Method</th>
+          <th>Endpoint</th>
+          <th>Description</th>
+        </tr>
+        <tr>
+          <td class="method">POST</td>
+          <td class="endpoint">/api/users</td>
+          <td>Register a new user (customer role by default)</td>
+        </tr>
+        <tr>
+          <td class="method">GET</td>
+          <td class="endpoint">/api/users</td>
+          <td>List all users (admin only)</td>
+        </tr>
+        <tr>
+          <td class="method">PUT</td>
+          <td class="endpoint">/api/users/:id</td>
+          <td>Update user info (self or admin; only admin can change roles)</td>
+        </tr>
+        <tr>
+          <td class="method">DELETE</td>
+          <td class="endpoint">/api/users/:id</td>
+          <td>Delete a user (admin only)</td>
+        </tr>
+        <tr>
+          <td class="method">GET</td>
+          <td class="endpoint">/api/users/whoami</td>
+          <td>Get current user info (JWT required)</td>
+        </tr>
+        <tr>
+          <td class="method">POST</td>
+          <td class="endpoint">/api/login</td>
+          <td>Authenticate user and get JWT</td>
+        </tr>
+        <tr>
+          <td class="method">GET</td>
+          <td class="endpoint">/api/products</td>
+          <td>List all products (supports filters, sorting, pagination)</td>
+        </tr>
+        <tr>
+          <td class="method">POST</td>
+          <td class="endpoint">/api/products</td>
+          <td>Create a new product (merchant/admin only)</td>
+        </tr>
+        <tr>
+          <td class="method">POST</td>
+          <td class="endpoint">/api/products/bulk</td>
+          <td>Bulk create products (merchant/admin only)</td>
+        </tr>
+        <tr>
+          <td class="method">PUT</td>
+          <td class="endpoint">/api/products/:id</td>
+          <td>Update a product (only the seller can update)</td>
+        </tr>
+        <tr>
+          <td class="method">DELETE</td>
+          <td class="endpoint">/api/products/drop</td>
+          <td>Drop all products (admin only, for testing)</td>
+        </tr>
+      </table>
+
+      <h2>Endpoint Details &amp; Examples</h2>
+
+      <details>
+        <summary>POST /api/users &mdash; Register a new user</summary>
+        <b>Request Body:</b>
+        <pre>
+{
+  "username": "alice",
+  "password": "secret123",
+  "fullname": "Alice Example",
+  "email": "alice@example.com"
+}</pre
+        >
+        <b>Response:</b>
+        <pre>
+{
+  "message": "User created successfully",
+  "user": {
+    "_id": "USER_ID",
+    "username": "alice",
+    "fullname": "Alice Example",
+    "email": "alice@example.com",
+    "role": "customer"
+  }
+}</pre
+        >
+      </details>
+
+      <details>
+        <summary>POST /api/login &mdash; Authenticate user and get JWT</summary>
+        <b>Request Body:</b>
+        <pre>
+{
+  "username": "alice",
+  "password": "secret123"
+}</pre
+        >
+        <b>Response:</b>
+        <pre>
+{
+  "message": "login successful",
+  "token": "JWT_TOKEN",
+  "username": "alice",
+  "id": "USER_ID"
+}</pre
+        >
+      </details>
+
+      <details>
+        <summary>GET /api/users &mdash; List all users (admin only)</summary>
+        <b>Headers:</b>
+        <pre>Authorization: Bearer &lt;token&gt;</pre>
+        <b>Response:</b>
+        <pre>
+[
+  {
+    "_id": "USER_ID",
+    "username": "alice",
+    "fullname": "Alice Example",
+    "email": "alice@example.com",
+    "role": "customer"
+  },
+  ...
+]</pre
+        >
+      </details>
+
+      <details>
+        <summary>PUT /api/users/:id &mdash; Update user info</summary>
+        <b>Headers:</b>
+        <pre>Authorization: Bearer &lt;token&gt;</pre>
+        <b>Request Body:</b>
+        <pre>
+{
+  "fullname": "Alice Updated",
+  "email": "alice@newmail.com"
+}</pre
+        >
+        <b>Response:</b>
+        <pre>
+{
+  "message": "User updated successfully",
+  "user": {
+    "_id": "USER_ID",
+    "username": "alice",
+    "fullname": "Alice Updated",
+    "email": "alice@newmail.com",
+    "role": "customer"
+  }
+}</pre
+        >
+      </details>
+
+      <details>
+        <summary>
+          DELETE /api/users/:id &mdash; Delete a user (admin only)
+        </summary>
+        <b>Headers:</b>
+        <pre>Authorization: Bearer &lt;token&gt;</pre>
+        <b>Response:</b>
+        <pre>
+{
+  "message": "User deleted successfully",
+  "user": {
+    "_id": "USER_ID",
+    "username": "alice",
+    ...
+  }
+}</pre
+        >
+      </details>
+
+      <details>
+        <summary>GET /api/users/whoami &mdash; Get current user info</summary>
+        <b>Headers:</b>
+        <pre>Authorization: Bearer &lt;token&gt;</pre>
+        <b>Response:</b>
+        <pre>
+{
+  "_id": "USER_ID",
+  "username": "alice",
+  "fullname": "Alice Example",
+  "email": "alice@example.com",
+  "role": "customer"
+}</pre
+        >
+      </details>
+
+      <details>
+        <summary>GET /api/products &mdash; List all products</summary>
+        <b>Query Params:</b>
+        <pre>
+?category=electronics&amp;sortBy=price&amp;sort=desc&amp;limit=5</pre
+        >
+        <b>Response:</b>
+        <pre>
+{
+  "message": "Products fetched successfully",
+  "products": [
+    {
+      "_id": "PRODUCT_ID",
+      "name": "Product Name",
+      "category": "electronics",
+      "price": 99.99,
+      "isActive": true,
+      "seller": {
+        "fullname": "Merchant Name"
+      }
+    },
+    ...
+  ]
+}</pre
+        >
+      </details>
+
+      <details>
+        <summary>POST /api/products &mdash; Create a new product</summary>
+        <b>Headers:</b>
+        <pre>Authorization: Bearer &lt;token&gt;</pre>
+        <b>Request Body:</b>
+        <pre>
+{
+  "name": "New Product",
+  "category": "electronics",
+  "price": 49.99,
+  "isActive": true
+}</pre
+        >
+        <b>Response:</b>
+        <pre>
+{
+  "message": "Product created successfully",
+  "product": {
+    "_id": "PRODUCT_ID",
+    "name": "New Product",
+    "category": "electronics",
+    "price": 49.99,
+    "isActive": true,
+    "seller": "USER_ID"
+  }
+}</pre
+        >
+      </details>
+
+      <details>
+        <summary>POST /api/products/bulk &mdash; Bulk create products</summary>
+        <b>Headers:</b>
+        <pre>Authorization: Bearer &lt;token&gt;</pre>
+        <b>Request Body:</b>
+        <pre>
+[
+  {
+    "name": "Product 1",
+    "category": "books",
+    "price": 10.0,
+    "isActive": true
+  },
+  {
+    "name": "Product 2",
+    "category": "books",
+    "price": 12.0,
+    "isActive": true
+  }
+]</pre
+        >
+        <b>Response:</b>
+        <pre>
+{
+  "message": "Products created successfully",
+  "products": [
+    { "_id": "PRODUCT_ID_1", ... },
+    { "_id": "PRODUCT_ID_2", ... }
+  ]
+}</pre
+        >
+      </details>
+
+      <details>
+        <summary>PUT /api/products/:id &mdash; Update a product</summary>
+        <b>Headers:</b>
+        <pre>Authorization: Bearer &lt;token&gt;</pre>
+        <b>Request Body:</b>
+        <pre>
+{
+  "name": "Updated Product",
+  "price": 59.99
+}</pre
+        >
+        <b>Response:</b>
+        <pre>
+{
+  "message": "Product updated successfully",
+  "product": {
+    "_id": "PRODUCT_ID",
+    "name": "Updated Product",
+    ...
+  }
+}</pre
+        >
+      </details>
+
+      <details>
+        <summary>
+          DELETE /api/products/drop &mdash; Drop all products (admin only)
+        </summary>
+        <b>Headers:</b>
+        <pre>Authorization: Bearer &lt;token&gt;</pre>
+        <b>Response:</b>
+        <pre>Status: 204 No Content</pre>
+      </details>
+
+      <h2>Authentication</h2>
+      <p>
+        Most endpoints require a JWT token in the
+        <code>Authorization</code> header:<br />
+        <code>Authorization: Bearer &lt;token&gt;</code>
+      </p>
+
+      <h2>Features</h2>
+      <ul>
+        <li>User authentication with JWT</li>
+        <li>Role-based access control (admin, merchant, customer)</li>
+        <li>Product management with validation and bulk operations</li>
+        <li>Centralized error handling and logging</li>
+        <li>MongoDB integration via Mongoose</li>
+        <li>Ready for cloud deployment (Vercel, etc.)</li>
+      </ul>
+    </main>
+    <footer>
+      &copy; 2025 Jakariya Abbas &mdash;
+      <a
+        href="https://github.com/jakariyaa/ShopTop-Backend"
+        style="color: #3182ce"
+        >GitHub</a
+      >
+    </footer>
   </body>
 </html>
