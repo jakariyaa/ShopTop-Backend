@@ -1,10 +1,14 @@
 import { Router, Request, Response } from "express";
-import path from "path";
+import config from "../utils/config";
 
 const rootRouter = Router();
 
 rootRouter.get("/", (req: Request, res: Response) => {
-  res.sendFile(path.join(__dirname, "../../../", "public", "index.html"));
+  res.sendFile(config.publicIndexHtmlPath);
+});
+
+rootRouter.get("/favicon.ico", (req: Request, res: Response) => {
+  res.sendFile(config.publicFaviconPath);
 });
 
 export default rootRouter;
